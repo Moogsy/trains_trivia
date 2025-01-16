@@ -35,25 +35,25 @@ VALUES
 -- Insert into Station_Line (Yamanote Line)
 INSERT INTO Station_Line (station_id, line_id, station_number, platform_number, jingle)
 VALUES 
-(1, 1, 1, 1, NULL),  -- Tokyo
-(2, 1, 2, 2, NULL),  -- Shinagawa
-(3, 1, 3, 3, NULL),  -- Shibuya
-(4, 1, 4, 4, NULL),  -- Ikebukuro
-(5, 1, 5, 5, NULL),  -- Shinjuku
-(6, 1, 6, 6, NULL),  -- Akihabara
-(7, 1, 7, 7, NULL);  -- Ueno
+(1, 1, 1, 1, 'Tokyo_Yamanote.mp3'),    -- Tokyo
+(2, 1, 2, 2, 'Shinagawa_Yamanote.mp3'), -- Shinagawa
+(3, 1, 3, 3, 'Shibuya_Yamanote.mp3'),   -- Shibuya
+(4, 1, 4, 4, 'Ikebukuro_Yamanote.mp3'), -- Ikebukuro
+(5, 1, 5, 5, 'Shinjuku_Yamanote.mp3'),  -- Shinjuku
+(6, 1, 6, 6, 'Akihabara_Yamanote.mp3'), -- Akihabara
+(7, 1, 7, 7, 'Ueno_Yamanote.mp3');      -- Ueno
 
 -- Insert into Station_Line (Sobu Line)
 INSERT INTO Station_Line (station_id, line_id, station_number, platform_number, jingle)
 VALUES 
-(1, 2, 1, 1, NULL),  -- Tokyo
-(2, 2, 2, 2, NULL),  -- Shinagawa
-(6, 2, 3, 3, NULL),  -- Akihabara
-(7, 2, 4, 4, NULL);  -- Ueno
+(1, 2, 1, 1, 'Tokyo_Sobu.mp3'),      -- Tokyo
+(2, 2, 2, 2, 'Shinagawa_Sobu.mp3'),  -- Shinagawa
+(6, 2, 3, 3, 'Akihabara_Sobu.mp3'),  -- Akihabara
+(7, 2, 4, 4, 'Ueno_Sobu.mp3');       -- Ueno
 
 -- Insert into Station_Line (Yokosuka Line)
 INSERT INTO Station_Line (station_id, line_id, station_number, platform_number, jingle)
 VALUES 
-(1, 3, 1, 1, NULL),  -- Tokyo
-(2, 3, 2, 2, NULL),  -- Shinagawa
-(7, 3, 3, 3, NULL);  -- Ueno
+(1, 3, 1, 1, 'Tokyo_Yokosuka.mp3'),      -- Tokyo
+(2, 3, 2, 2, 'Shinagawa_Yokosuka.mp3'), -- Shinagawa
+(7, 3, 3, 3, 'Ueno_Yokosuka.mp3');
