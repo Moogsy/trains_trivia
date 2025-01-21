@@ -10,6 +10,7 @@ CREATE TABLE Company (
 -- ========================
 CREATE TABLE Line (
     line_name  TEXT PRIMARY KEY NOT NULL,     -- Line name becomes the primary key
+    prefix TEXT NOT NULL,
     company_name TEXT NOT NULL,      -- Reference by name instead of ID
     color      TEXT,                 -- e.g., "Green", "#00AA00"
     FOREIGN KEY (company_name) REFERENCES Company(company_name)
