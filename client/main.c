@@ -1,12 +1,17 @@
-// client.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 
+#include "yyjson.h"
+#include "utils.h"
+#include "types.h"
+
 #define PORT 8080
 #define BUFFER_SIZE 1024
+
+void print_question(Question *q, int index, char *buffer);
 
 int main() {
     // Create socket
@@ -35,10 +40,11 @@ int main() {
 
     printf("Connected to server\n");
 
-    for (int i = 0; i < 3; i++) {
-        // Send message to server
+    for(int i = 0; i < 4; i++){
+
+         // Send message to server
         char buffer[BUFFER_SIZE];
-        snprintf(buffer, BUFFER_SIZE, "Message %d from client", i + 1);
+        snprintf(buffer, BUFFER_SIZE, "Send me a question %d", i + 1);
         if (send(client_sock, buffer, strlen(buffer), 0) == -1) {
             perror("send");
             close(client_sock);
@@ -51,11 +57,32 @@ int main() {
             perror("recv");
             close(client_sock);
             exit(EXIT_FAILURE);
-        }
-        printf("Server: %s\n", buffer);
+            }
+        Question q;
+        print_question(&q, i, buffer);      
+
     }
 
     close(client_sock);
     return 0;
+}
+
+void print_question(Question *q, int index, char *buffer){
+    if (json_to_question(buffer, q) == 0) {
+        printf("Question Number %d\n ", index+1);
+        printf("Question: %s\n ", q->prompt);
+        printf("Choices:\n");
+        for (int i = 0; i < NUM_CHOICES; i++) {
+            printf("  %d: %s\n", i+1, q->choices[i]);
+        }
+
+        int answer;
+        printf("Choose an answer: \n");
+        scanf("%d", &answer);
+
+        char* message = answer-1 == q->correct_answer? "Correct! " : "Wrong! ";
+        printf("%s The answer is: %s\n", message, q->choices[q->correct_answer]);
+
+    }
 }
 

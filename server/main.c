@@ -8,15 +8,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sqlite3.h>
+#include <time.h>
+
+#include "questions.h"
+#include "types.h"
+#include "yyjson.h"
 
 #define BUFFER_SIZE 1024
+#define NUM_CHOICES 4 
 #define DB_PATH "data/trains.db"
 #define PORT 8080
 #define MAX_CONNECTIONS 5
 
-int handle_client(int client_sock);
+int handle_client(int client_sock, sqlite3* db);
+char *question_to_json(Question *q);
 
 int main(void) {
+    // We need to seed our rng
+    srand(time(NULL));
 
     // Db stuff, might move it somewhere else
     sqlite3 *db;
@@ -70,6 +79,7 @@ int main(void) {
 
         printf("Accepting a new connection.\n");
 
+
         // Joys of forking
         // But I'm tired, too bad !
         pid_t pid = fork();
@@ -82,7 +92,7 @@ int main(void) {
         // Child process
         // What do you mean this is cursed indent ?
         else if (pid == 0) {
-            return handle_client(client_sock);
+            return handle_client(client_sock, db);
         }
 
         // Parent process
@@ -96,26 +106,49 @@ int main(void) {
     return EXIT_SUCCESS;
 }
 
-int handle_client(int client_sock) {
-    for (int i = 0; i < 3; i++) {
+int handle_client(int client_sock, sqlite3* db) {
+    for(int i = 0; i < 4; i++){
+        Question question = generate_question(db);
         // Receive message from client
-        char buffer[BUFFER_SIZE];
-        memset(buffer, 0, BUFFER_SIZE);
-        if (recv(client_sock, buffer, BUFFER_SIZE, 0) <= 0) {
-            perror("recv");
-            close(client_sock);
-            exit(EXIT_FAILURE);
-        }
-        printf("Client: %s\n", buffer);
+        char buffer[BUFFER_SIZE];           
+
+        const char *question_json = question_to_json(&question);
 
         // Send response to client
-        snprintf(buffer, BUFFER_SIZE, "Message %d from server", i + 1);
+        snprintf(buffer, BUFFER_SIZE, "%s", question_json);
         if (send(client_sock, buffer, strlen(buffer), 0) == -1) {
             perror("send");
-            close(client_sock);
             exit(EXIT_FAILURE);
         }
     }
     close(client_sock);
     exit(EXIT_SUCCESS);
 }
+
+char *question_to_json(Question *q) {
+    // Create a mutable JSON document
+    yyjson_mut_doc *doc = yyjson_mut_doc_new(NULL);
+    yyjson_mut_val *root = yyjson_mut_obj(doc);
+    yyjson_mut_doc_set_root(doc, root);
+
+    // Add fields to the JSON object
+    yyjson_mut_obj_add_str(doc, root, "question", q->prompt);
+    yyjson_mut_obj_add_int(doc, root, "correct_answer", q->correct_answer);
+
+    // Add the "solutions" array
+    yyjson_mut_val *choices = yyjson_mut_arr(doc);
+    for (size_t i = 0; i < NUM_CHOICES; i++) {
+        yyjson_mut_arr_add_str(doc, choices, q->choices[i]);
+    }
+    yyjson_mut_obj_add_val(doc, root, "choices", choices);
+
+    // Write JSON to string
+    char *question_json = yyjson_mut_write(doc, YYJSON_WRITE_PRETTY, NULL);
+
+    yyjson_mut_doc_free(doc);
+
+    return question_json; 
+}
+
+
+

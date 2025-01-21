@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "yyjson.h": "c",
+        "types.h": "c",
+        "questions.h": "c"
+    }
+}

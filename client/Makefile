@@ -2,8 +2,8 @@
 CC = gcc
 CFLAGS = -Wall -g
 LIBS = -lsqlite3
-TARGET = server
-SRC = main.c yyjson.c questions.c
+TARGET = client
+SRC = main.c yyjson.c utils.c
 
 # Rules
 all: $(TARGET)
