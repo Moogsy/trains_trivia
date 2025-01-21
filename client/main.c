@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#include "yyjson.h"
 #include "utils.h"
 #include "types.h"
 
