@@ -68,37 +68,38 @@ int main(void) {
 
     // Big aah loop
     while (1) {
-        struct sockaddr_in client_addr;
-        socklen_t addr_len = sizeof(client_addr);
-        int client_sock = accept(server_sock, (struct sockaddr*)&client_addr, &addr_len);
+    struct sockaddr_in client_addr;
+    socklen_t addr_len = sizeof(client_addr);
+    int client_sock = accept(server_sock, (struct sockaddr*)&client_addr, &addr_len);
 
-        if (client_sock < 0) {
-            perror("accept");
-            continue;
-        }
+    if (client_sock < 0) {
+        perror("accept");
+        continue;
+    }
 
-        printf("Accepting a new connection.\n");
+    printf("Accepting a new connection.\n");
 
+    // Joys of forking
+    // But I'm tired, too bad !
+    pid_t pid = fork();
 
-        // Joys of forking
-        // But I'm tired, too bad !
-        pid_t pid = fork();
-
-        // Errored out, make sure to clean up everything
-        if (pid < 0) {
-            perror("fork");
-            close(client_sock);
-        } 
-        // Child process
-        // What do you mean this is cursed indent ?
-        else if (pid == 0) {
-            return handle_client(client_sock, db);
-        }
-
-        // Parent process
-        int child_status;
-        waitpid(pid, &child_status, 0);
+    // Errored out, make sure to clean up everything
+    if (pid < 0) {
+        perror("fork");
         close(client_sock);
+        continue; // Go back to accepting new clients
+    } 
+
+    // Child process
+    // What do you mean this is cursed indent ?
+    if (pid == 0) {
+        close(server_sock); // Child doesn't need the listening socket
+        return handle_client(client_sock, db);
+    }
+
+    // Parent process
+    close(client_sock); // Parent doesn't need the client socket
+    // No waitpid here to avoid blocking the parent
     }
 
     close(server_sock);
