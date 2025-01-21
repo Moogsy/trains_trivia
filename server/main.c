@@ -108,6 +108,20 @@ int main(void) {
 
 int handle_client(int client_sock, sqlite3* db) {
     for(int i = 0; i < 4; i++){
+
+        // Receive message from client
+        // Not needed to read the value
+        // It's only to know when the client answered
+        char buffer_useless[BUFFER_SIZE];
+        memset(buffer_useless, 0, BUFFER_SIZE);
+        if (recv(client_sock, buffer_useless, BUFFER_SIZE, 0) <= 0) {
+            perror("recv");
+            close(client_sock);
+            exit(EXIT_FAILURE);
+        }
+        // printf("Client: %s\n", buffer_useless);
+
+        printf("Sending Question %d\n", i+1);
         Question question = generate_question(db);
         // Receive message from client
         char buffer[BUFFER_SIZE];           
