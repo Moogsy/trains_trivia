@@ -108,6 +108,10 @@ int main(void) {
 }
 
 int handle_client(int client_sock, sqlite3* db) {
+    // Reseed the RNG in the child process
+    // I had to do this to get random questions
+    srand(time(NULL) ^ getpid());
+
     for(int i = 0; i < 4; i++){
 
         // Receive message from client
