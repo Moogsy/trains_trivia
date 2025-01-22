@@ -9,7 +9,7 @@
 
 typedef Question (*GenerateQuestionFunc)(sqlite3 *db);
 
-Question default_question() {
+static Question default_question() {
     return (Question){
         .prompt="We couldn't generate a question, so how was your day ?",
         .choices={"Very bad", "Bad", "Good", "Very good"},
@@ -115,3 +115,4 @@ Question generate_question(sqlite3 *db) {
 
     return qfuncs[random_bound(num_funcs)](db);
 }
+
