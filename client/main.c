@@ -39,8 +39,7 @@ int main() {
 
     printf("Connected to server\n");
 
-    for(int i = 0; i < 4; i++){
-
+    for (int i = 0;; i++){
          // Send message to server
         char buffer[BUFFER_SIZE];
         snprintf(buffer, BUFFER_SIZE, "Send me a question %d", i + 1);
@@ -56,10 +55,9 @@ int main() {
             perror("recv");
             close(client_sock);
             exit(EXIT_FAILURE);
-            }
+        }
         Question q;
         print_question(&q, i, buffer);      
-
     }
 
     close(client_sock);
@@ -68,20 +66,22 @@ int main() {
 
 void print_question(Question *q, int index, char *buffer){
     if (json_to_question(buffer, q) == 0) {
-        printf("Question Number %d\n ", index+1);
-        printf("Question: %s\n ", q->prompt);
-        printf("Choices:\n");
+        printf("Question %d: %s\n", index + 1, q->prompt);
         for (int i = 0; i < NUM_CHOICES; i++) {
-            printf("  %d: %s\n", i+1, q->choices[i]);
+            printf("    %d: %s\n", i+1, q->choices[i]);
         }
 
+        printf("Choose an answer: ");
         int answer;
-        printf("Choose an answer: \n");
         scanf("%d", &answer);
 
-        char* message = answer-1 == q->correct_answer? "Correct! " : "Wrong! ";
-        printf("%s The answer is: %s\n", message, q->choices[q->correct_answer]);
+        if (answer - 1 == q->correct_answer) {
+            printf("Correct !\n");
+        } else {
+            printf("Wrong ! The answer is: %s\n", q->choices[q->correct_answer]);
+        }
 
+        printf("\n");
     }
 }
 
