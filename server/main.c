@@ -145,7 +145,7 @@ void accept_client_connections(int server_sock, sqlite3* db) {
 int handle_client(int client_sock, sqlite3* db) {
     srand(time(NULL) ^ getpid()); // Reseed RNG for the child process
 
-    while (1) {
+    for (int i = 0; i < 5; i++) {
         char buffer_useless[BUFFER_SIZE] = {0};
         if (recv(client_sock, buffer_useless, BUFFER_SIZE, 0) <= 0) {
             perror("recv");
@@ -157,6 +157,7 @@ int handle_client(int client_sock, sqlite3* db) {
         char* question_json = question_to_json(&question);
 
         if (!question_json) {
+            fprintf(stderr, "Received: %s", question_json);
             fprintf(stderr, "Failed to generate JSON for question.\n");
             close(client_sock);
             return EXIT_FAILURE;

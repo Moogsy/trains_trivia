@@ -39,7 +39,7 @@ int main() {
 
     printf("Connected to server\n");
 
-    for (int i = 0;; i++){
+    for (int i = 0; i < 5; i++){
          // Send message to server
         char buffer[BUFFER_SIZE];
         snprintf(buffer, BUFFER_SIZE, "Send me a question %d", i + 1);
